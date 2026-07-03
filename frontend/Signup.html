@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - QR Attendance</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#4e73df,#1cc88a);
+}
+
+.navbar{
+    position:fixed;
+    top:0;
+    width:100%;
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    padding:15px 40px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+    z-index:1000;
+}
+
+.logo a{
+    font-size:20px;
+    font-weight:bold;
+    text-decoration:none;
+    color:white;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:120px;
+    padding-bottom:40px;
+}
+
+.form-box{
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(15px);
+    padding:40px;
+    border-radius:15px;
+    width:100%;
+    max-width:400px;
+    color:white;
+    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+.form-box h2{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group input,
+.input-group select{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    margin-top:5px;
+    color:#333;
+    outline:none;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:25px;
+    background:white;
+    color:#4e73df;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn:hover{
+    transform:scale(1.05);
+}
+
+.hidden{
+    display:none;
+}
+
+.bottom-text{
+    text-align:center;
+    margin-top:20px;
+}
+
+.bottom-text a{
+    color:#f6c23e;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+#errorMsg{
+    font-size:14px;
+    margin-bottom:10px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">
+        <a href="Home.html">🎓 QR Attendance</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="form-box">
+        <h2>Create Account</h2>
+
+        <form onsubmit="return validateSignup(event)">
+
+            <div class="input-group">
+                <input type="text" id="fullName" placeholder="Full Name" required>
+            </div>
+
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-group">
+                <select id="role" onchange="toggleFields()" required>
+                    <option value="">Select Role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <div class="input-group hidden" id="teacherField">
+                <input type="text" id="code" placeholder="Enter Teacher Code">
+            </div>
+
+            <div class="input-group hidden" id="enrollmentField">
+                <input type="text" id="enrollment" placeholder="Enrollment Number">
+            </div>
+
+            <div class="input-group hidden" id="yearField">
+                <select id="year">
+                    <option value="">Select Year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
+            </div>
+
+            <div id="errorMsg"></div>
+
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+
+        <div class="bottom-text">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+/* =========================
+   API BASE AUTO DETECTION
+========================= */
+
+const API_BASE =
+    window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://your-backend.onrender.com"; // replace this
+
+
+function toggleFields(){
+    const role = document.getElementById("role").value;
+
+    document.getElementById("teacherField").classList.add("hidden");
+    document.getElementById("enrollmentField").classList.add("hidden");
+    document.getElementById("yearField").classList.add("hidden");
+
+    if(role === "teacher"){
+        document.getElementById("teacherField").classList.remove("hidden");
+    }
+
+    if(role === "student"){
+        document.getElementById("enrollmentField").classList.remove("hidden");
+        document.getElementById("yearField").classList.remove("hidden");
+    }
+}
+
+async function validateSignup(event){
+    event.preventDefault();
+
+    const error = document.getElementById("errorMsg");
+    error.style.color = "#ffcccc";
+    error.innerText = "";
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const role = document.getElementById("role").value;
+    const code = document.getElementById("code").value.trim();
+    const enrollment = document.getElementById("enrollment").value.trim();
+    const year = document.getElementById("year").value;
+
+    if(role === ""){
+        error.innerText = "Please select role ❌";
+        return false;
+    }
+
+    const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+    if(!passRegex.test(password)){
+        error.innerText = "Password must be at least 6 characters with letters and numbers ❌";
+        return false;
+    }
+
+    if(role === "teacher"){
+        if(code !== "2026"){
+            error.innerText = "Invalid Teacher Code ❌";
+            return false;
+        }
+    }
+
+    if(role === "student"){
+        if(enrollment === "" || year === ""){
+            error.innerText = "Please fill Enrollment Number and Year ❌";
+            return false;
+        }
+
+        const enrollRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+
+        if(!enrollRegex.test(enrollment)){
+            error.innerText = "Enrollment must contain letters and numbers ❌";
+            return false;
+        }
+    }
+
+    try{
+        const payload = {
+            fullName,
+            email,
+            password,
+            role,
+            enrollment: role === "student" ? enrollment : null,
+            year: role === "student" ? year : null,
+            teacherCode: role === "teacher" ? code : null
+        };
+
+        const response = await fetch(`${API_BASE}/api/auth/signup`, {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        let data = {};
+
+        try{
+            data = await response.json();
+        }catch{
+            data = {};
+        }
+
+        if(!response.ok){
+            error.innerText = data.error || "Signup failed ❌";
+            return false;
+        }
+
+        error.style.color = "#00ffae";
+        error.innerText = "Account Created Successfully ✅ Redirecting...";
+
+        setTimeout(()=>{
+            window.location.href = "login.html";
+        },1500);
+
+    }catch(err){
+        console.error("Signup Error:", err);
+        error.innerText = "Unable to connect to server ❌";
+    }
+
+    return false;
+}
+
+</script>
+
+</body>
+</html>

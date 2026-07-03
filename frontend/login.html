@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - QR Attendance</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#4e73df,#1cc88a);
+}
+
+.navbar{
+    position:fixed;
+    top:0;
+    width:100%;
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    padding:15px 40px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+    z-index:1000;
+}
+
+.logo a{
+    font-size:20px;
+    font-weight:bold;
+    text-decoration:none;
+    color:white;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:120px;
+}
+
+.form-box{
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(15px);
+    padding:40px;
+    border-radius:15px;
+    width:100%;
+    max-width:400px;
+    color:white;
+    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+.form-box h2{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group input, .input-group select{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    margin-top:5px;
+    color: #333;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:25px;
+    background:white;
+    color:#4e73df;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn:hover{
+    transform:scale(1.05);
+}
+
+.hidden{
+    display:none;
+}
+
+.bottom-text{
+    text-align:center;
+    margin-top:20px;
+}
+
+.bottom-text a{
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* Forgot password white */
+.bottom-text a:first-child{
+    color:white;
+}
+
+/* Sign up yellow */
+.bottom-text a:last-child{
+    color:#f6c23e;
+    margin-left:5px;
+}
+
+#errorMsg {
+    color: #ffcccc;
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">
+        <a href="Home.html">🎓 QR Attendance</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="form-box">
+        <h2>Login</h2>
+
+        <div id="errorMsg"></div>
+
+        <form onsubmit="return validateLogin(event)">
+
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-group">
+                <select id="role" onchange="toggleFields()" required>
+                    <option value="">Select Role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <div class="input-group hidden" id="teacherField">
+                <input type="text" id="code" placeholder="Enter Teacher Code">
+            </div>
+
+            <div class="input-group hidden" id="enrollmentField">
+                <input type="text" id="enrollment" placeholder="Enter Enrollment Number">
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+
+        </form>
+
+        <div class="bottom-text">
+            <a href="forgot-password.html">Forgot Password?</a>
+            <a href="Signup.html">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function toggleFields(){
+    const role = document.getElementById("role").value;
+
+    document.getElementById("teacherField").classList.add("hidden");
+    document.getElementById("enrollmentField").classList.add("hidden");
+
+    if(role === "teacher"){
+        document.getElementById("teacherField").classList.remove("hidden");
+    }
+
+    if(role === "student"){
+        document.getElementById("enrollmentField").classList.remove("hidden");
+    }
+}
+
+async function validateLogin(event){
+    event.preventDefault();
+
+    const error = document.getElementById("errorMsg");
+    error.innerText = "";
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const role = document.getElementById("role").value;
+    const code = document.getElementById("code").value.trim();
+    const enrollment = document.getElementById("enrollment").value.trim();
+
+    if(role === ""){
+        error.innerText = "Please select role! ❌";
+        return false;
+    }
+
+    if(role === "teacher"){
+        if(code !== "2026"){
+            error.innerText = "Invalid Teacher Code! ❌";
+            return false;
+        }
+    }
+
+    if(role === "student"){
+        if(enrollment === ""){
+            error.innerText = "Please enter Enrollment Number! ❌";
+            return false;
+        }
+
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+        if(!regex.test(enrollment)){
+            error.innerText = "Enrollment must contain letters and numbers only (Example: BCA2026001) ❌";
+            return false;
+        }
+    }
+
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            error.innerText = (data.error || 'Login failed') + ' ❌';
+            return false;
+        }
+
+        // Store user in localstorage
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+        if(role === "teacher"){
+            window.location.href = "teacher-dashboard.html";
+        } else {
+            window.location.href = "student-dashboard.html";
+        }
+
+    } catch (err) {
+        console.error(err);
+        error.innerText = "Network error. Connection to backend failed. ❌";
+    }
+
+    return false;
+}
+
+</script>
+
+</body>
+</html>

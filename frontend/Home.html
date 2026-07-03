@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QR Attendance System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+/* ===== HEADER ===== */
+.navbar{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 60px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+}
+
+/* LEFT SIDE */
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.logo img{
+    width:40px;
+    margin-right:10px;
+}
+
+/* RIGHT SIDE */
+.nav-buttons{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-buttons button{
+    padding:8px 20px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.login-btn{
+    background:white;
+    color:#4e73df;
+}
+
+.signup-btn{
+    background:#f6c23e;
+    color:black;
+}
+
+.nav-buttons button:hover{
+    transform:scale(1.05);
+}
+
+/* ===== HERO SECTION ===== */
+.hero{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px 20px;
+}
+
+.hero-content{
+    max-width:700px;
+    color:white;
+}
+
+.hero-content h1{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+.hero-content p{
+    font-size:18px;
+    margin-bottom:30px;
+    line-height:1.6;
+}
+
+.hero-content button{
+    padding:14px 30px;
+    border:none;
+    border-radius:30px;
+    background:white;
+    color:#4e73df;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.hero-content button:hover{
+    transform:scale(1.05);
+}
+
+/* ===== TABLET ===== */
+@media(max-width:992px){
+    .navbar{
+        padding:15px 30px;
+    }
+
+    .hero-content h1{
+        font-size:34px;
+    }
+
+    .hero-content p{
+        font-size:16px;
+    }
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+
+    .navbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .nav-buttons{
+        width:100%;
+        justify-content:flex-end;
+    }
+
+    .hero-content h1{
+        font-size:26px;
+    }
+
+    .hero-content p{
+        font-size:14px;
+    }
+
+    .hero-content button{
+        width:100%;
+        max-width:250px;
+    }
+}
+
+/* ===== SMALL MOBILE ===== */
+@media(max-width:480px){
+
+    .nav-buttons{
+        width:100%;
+        justify-content:space-between;
+    }
+
+    .nav-buttons button{
+        width:48%;
+    }
+}
+</style>
+</head>
+
+<body style="background:linear-gradient(135deg,#4e73df,#224abe); min-height:100vh;">
+
+<!-- HEADER -->
+<div class="navbar">
+
+    <!-- LEFT -->
+    <div class="logo">
+        <a href="Home.html">
+            <img src="https://cdn-icons-png.flaticon.com/512/159/159469.png" alt="QR Logo">
+            QR Attendance
+        </a>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="nav-buttons">
+        <button class="login-btn" onclick="goToLogin()">Login</button>
+        <button class="signup-btn" onclick="goToSignup()">Sign Up</button>
+    </div>
+
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>Smart QR Based Attendance System</h1>
+        <p>
+            Mark attendance instantly using secure QR technology.
+            Fast, reliable, and fully automated for schools & colleges.
+        </p>
+        <button onclick="goToSignup()">Get Started</button>
+    </div>
+</div>
+
+<script>
+function goToLogin(){
+    window.location.href="login.html";
+}
+
+function goToSignup(){
+    window.location.href="Signup.html";
+}
+</script>
+
+</body>
+</html>
