@@ -150,14 +150,17 @@ body{
                 </select>
             </div>
 
+            <!-- Teacher Code -->
             <div class="input-group hidden" id="teacherField">
                 <input type="text" id="code" placeholder="Enter Teacher Code">
             </div>
 
+            <!-- Student Enrollment -->
             <div class="input-group hidden" id="enrollmentField">
                 <input type="text" id="enrollment" placeholder="Enrollment Number">
             </div>
 
+            <!-- Student Year -->
             <div class="input-group hidden" id="yearField">
                 <select id="year">
                     <option value="">Select Year</option>
@@ -174,7 +177,7 @@ body{
         </form>
 
         <div class="bottom-text">
-            Already have an account?
+            Already have an account? 
             <a href="login.html">Login</a>
         </div>
     </div>
@@ -182,15 +185,7 @@ body{
 
 <script>
 
-/* =========================
-   API BASE AUTO DETECTION
-========================= */
-
-const API_BASE =
-    window.location.hostname === "localhost"
-    ? "http://localhost:3000"
-    : window.location.origin;   // auto uses boss888.fun
-
+const API_BASE = "http://localhost:3000";
 
 function toggleFields(){
     const role = document.getElementById("role").value;
@@ -263,9 +258,9 @@ async function validateSignup(event){
             email,
             password,
             role,
-            enrollment: role === "student" ? enrollment : null,
-            year: role === "student" ? year : null,
-            teacherCode: role === "teacher" ? code : null
+            enrollment: role === "student" ? enrollment : undefined,
+            year: role === "student" ? year : undefined,
+            teacherCode: role === "teacher" ? code : undefined
         };
 
         const response = await fetch(`${API_BASE}/api/auth/signup`, {
@@ -276,13 +271,7 @@ async function validateSignup(event){
             body: JSON.stringify(payload)
         });
 
-        let data = {};
-
-        try{
-            data = await response.json();
-        }catch{
-            data = {};
-        }
+        const data = await response.json();
 
         if(!response.ok){
             error.innerText = data.error || "Signup failed ❌";
@@ -297,8 +286,8 @@ async function validateSignup(event){
         },1500);
 
     }catch(err){
-        console.error("Signup Error:", err);
-        error.innerText = "Unable to connect to server ❌";
+        console.error(err);
+        error.innerText = "Network error. Backend not running ❌";
     }
 
     return false;
